@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/jmjtodd28/golox/parser"
 	"github.com/jmjtodd28/golox/scanner"
 )
 
@@ -64,5 +65,12 @@ func runPrompt() error {
 func run(script string) error {
 	scanner := scanner.NewScanner(script)
 	scanner.ScanTokens()
+
+	for _, token := range scanner.Tokens {
+		fmt.Println(token.String())
+	}
+
+	parser := parser.NewParser(scanner.Tokens)
+	parser.Parse()
 	return nil
 }

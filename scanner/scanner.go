@@ -8,7 +8,7 @@ import (
 
 type Scanner struct {
 	source  string
-	tokens  []token.Token
+	Tokens  []token.Token
 	start   int
 	current int
 	line    int
@@ -19,7 +19,7 @@ func NewScanner(source string) Scanner {
 	var tokens []token.Token
 	return Scanner{
 		source:  source,
-		tokens:  tokens,
+		Tokens:  tokens,
 		start:   0,
 		current: 0,
 		line:    1,
@@ -31,16 +31,11 @@ func (s *Scanner) ScanTokens() {
 	for !s.isAtEnd() {
 		s.start = s.current
 		if nextToken, ok := s.scanToken(); ok {
-			s.tokens = append(s.tokens, nextToken)
+			s.Tokens = append(s.Tokens, nextToken)
 		}
 	}
 
-	s.tokens = append(s.tokens, token.NewToken(token.EOF, "", nil, s.line))
-
-	for _, token := range s.tokens {
-		fmt.Printf("token.String(): %v\n", token.String())
-	}
-	fmt.Printf("s.errs: %v\n", s.errs)
+	s.Tokens = append(s.Tokens, token.NewToken(token.EOF, "", nil, s.line))
 }
 
 // scanToken returns a token, if there is no token to return
