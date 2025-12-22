@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"slices"
 
 	"github.com/jmjtodd28/golox/ast"
 	"github.com/jmjtodd28/golox/token"
@@ -86,33 +87,30 @@ func (p *Parser) unary() ast.Expr {
 
 func (p *Parser) primary() ast.Expr {
 
-	if p.match(token.FALSE) {
-		return ast.NewLiteral(p.previous())
-	} else if p.match(token.TRUE) {
-		return ast.NewLiteral(p.previous())
-	} else if p.match(token.NIL) {
-		return ast.NewLiteral(p.previous())
-	} else if p.match(token.STRING, token.NUMBER) {
-		return ast.NewLiteral(p.previous())
-	} else if p.match(token.LEFT_PAREN) {
+	tok := p.peek()
+
+	switch tok.TokenType {
+	case token.FALSE, token.TRUE, token.NIL, token.STRING, token.NUMBER:
+		p.advance()
+		return ast.NewLiteral(tok)
+	case token.LEFT_PAREN:
+		p.advance()
 		expr := p.expression()
 		if !p.match(token.RIGHT_PAREN) {
-			panic("no right paren")
-			//todo handle error
-			return nil
+			// todo improve error handling
+			panic("Expected ')' after expression")
 		}
+
 		return ast.NewGrouping(expr)
+	default:
+		panic(fmt.Sprintf("Unexpected token: %v", tok))
 	}
-	panic(fmt.Sprintf("Unexpected token: %v", p.peek()))
-	return nil
 }
 
 func (p *Parser) match(tokenTypes ...token.Type) bool {
-	for _, tokenType := range tokenTypes {
-		if p.check(tokenType) {
-			p.advance()
-			return true
-		}
+	if slices.ContainsFunc(tokenTypes, p.check) {
+		p.advance()
+		return true
 	}
 
 	return false
