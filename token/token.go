@@ -60,7 +60,6 @@ const (
 type Token struct {
 	TokenType Type
 	Lexeme    string
-	Literal   any
 	Line      int
 }
 
@@ -100,13 +99,12 @@ func NewToken(tokenType Type, lexeme string, literal any, line int) Token {
 	return Token{
 		TokenType: tokenType,
 		Lexeme:    lexeme,
-		Literal:   literal,
 		Line:      line,
 	}
 }
 
 func (t *Token) String() string {
-	return fmt.Sprintf("%d - %q - %v", t.TokenType, t.Lexeme, t.Literal)
+	return fmt.Sprintf("%d - %q", t.TokenType, t.Lexeme)
 }
 
 // todo improve this error messaging, maybe store the column and line number

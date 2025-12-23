@@ -20,72 +20,73 @@ func NewParser(tokens []token.Token) Parser {
 	}
 }
 
-func (p *Parser) Parse() {
-	ast := p.expression()
+func (p *Parser) Parse() ast.Expr {
+	ast := p.parseExpression()
 	fmt.Println(ast.Print())
+	return ast
 }
 
-func (p *Parser) expression() ast.Expr {
-	return p.equality()
+func (p *Parser) parseExpression() ast.Expr {
+	return p.parseEquality()
 }
 
-func (p *Parser) equality() ast.Expr {
-	expr := p.comparison()
+func (p *Parser) parseEquality() ast.Expr {
+	expr := p.parseComparison()
 
-	for p.match(token.BANG_EQUAL, token.BANG) {
+	for p.match(token.BANG_EQUAL, token.EQUAL_EQUAL) {
 		operator := p.previous()
-		right := p.comparison()
+		right := p.parseComparison()
 		expr = ast.NewBinaryExpr(expr, right, operator)
 	}
 
 	return expr
 }
 
-func (p *Parser) comparison() ast.Expr {
-	expr := p.term()
+func (p *Parser) parseComparison() ast.Expr {
+	expr := p.parseTerm()
 
 	for p.match(token.GREATER, token.GREATER_EQUAL, token.LESS, token.LESS_EQUAL) {
 		operator := p.previous()
-		right := p.term()
+		right := p.parseTerm()
 		expr = ast.NewBinaryExpr(expr, right, operator)
 	}
 
 	return expr
 }
 
-func (p *Parser) term() ast.Expr {
-	expr := p.factor()
+func (p *Parser) parseTerm() ast.Expr {
+	expr := p.parseFactor()
 
 	for p.match(token.MINUS, token.PLUS) {
 		operator := p.previous()
-		right := p.factor()
+		right := p.parseFactor()
 		expr = ast.NewBinaryExpr(expr, right, operator)
 	}
 
 	return expr
 }
 
-func (p *Parser) factor() ast.Expr {
-	expr := p.unary()
+func (p *Parser) parseFactor() ast.Expr {
+	expr := p.parseUnary()
 
 	for p.match(token.SLASH, token.STAR) {
 		operator := p.previous()
-		right := p.unary()
+		right := p.parseUnary()
 		expr = ast.NewBinaryExpr(expr, right, operator)
 	}
 	return expr
 }
 
-func (p *Parser) unary() ast.Expr {
+func (p *Parser) parseUnary() ast.Expr {
 	if p.match(token.BANG, token.MINUS) {
 		operator := p.previous()
-		right := p.unary()
+		right := p.parseUnary()
 		return ast.NewUnary(operator, right)
 	}
-	return p.primary()
+	return p.parsePrimary()
 }
 
-func (p *Parser) primary() ast.Expr {
+func (p *Parser) parsePrimary() ast.Expr {
 
 	tok := p.peek()
 
@@ -95,7 +96,7 @@ func (p *Parser) primary() ast.Expr {
 		return ast.NewLiteral(tok)
 	case token.LEFT_PAREN:
 		p.advance()
-		expr := p.expression()
+		expr := p.parseExpression()
 		if !p.match(token.RIGHT_PAREN) {
 			// todo improve error handling
 			panic("Expected ')' after expression")

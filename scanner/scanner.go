@@ -87,7 +87,7 @@ func (s *Scanner) scanToken() (token.Token, bool) {
 		if s.match('=') {
 			tokenType = token.GREATER_EQUAL
 		} else {
-			tokenType = token.EQUAL
+			tokenType = token.GREATER
 		}
 	case '/':
 		if s.match('/') {

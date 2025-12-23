@@ -7,62 +7,62 @@ type Expr interface {
 }
 
 type BinaryExpr struct {
-	left, right Expr
-	operator    token.Token
+	Left, Right Expr
+	Operator    token.Token
 }
 
 func NewBinaryExpr(left Expr, right Expr, operator token.Token) Expr {
 	return &BinaryExpr{
-		left:     left,
-		right:    right,
-		operator: operator,
+		Left:     left,
+		Right:    right,
+		Operator: operator,
 	}
 }
 
 func (b *BinaryExpr) Print() string {
-	return "(" + b.operator.Lexeme + " " + b.left.Print() + " " + b.right.Print() + ")"
+	return "(" + b.Operator.Lexeme + " " + b.Left.Print() + " " + b.Right.Print() + ")"
 }
 
 type Grouping struct {
-	expression Expr
+	Expression Expr
 }
 
 func NewGrouping(expression Expr) Expr {
 	return &Grouping{
-		expression: expression,
+		Expression: expression,
 	}
 }
 
 func (g *Grouping) Print() string {
-	return "(group " + g.expression.Print() + ")"
+	return "(group " + g.Expression.Print() + ")"
 }
 
 type Literal struct {
-	token token.Token
+	Token token.Token
 }
 
 func NewLiteral(token token.Token) Expr {
 	return &Literal{
-		token: token,
+		Token: token,
 	}
 }
 
 func (l *Literal) Print() string {
-	return l.token.Lexeme
+	return l.Token.Lexeme
 }
 
 type Unary struct {
-	operator   token.Token
-	expression Expr
+	Operator   token.Token
+	Expression Expr
 }
 
 func NewUnary(value token.Token, expression Expr) Expr {
 	return &Unary{
-		operator:   value,
-		expression: expression,
+		Operator:   value,
+		Expression: expression,
 	}
 }
 
 func (u *Unary) Print() string {
-	return "(" + u.operator.Lexeme + " " + u.expression.Print() + ")"
+	return "(" + u.Operator.Lexeme + " " + u.Expression.Print() + ")"
 }

@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/jmjtodd28/golox/interpreter"
 	"github.com/jmjtodd28/golox/parser"
 	"github.com/jmjtodd28/golox/scanner"
 )
@@ -71,6 +72,12 @@ func run(script string) error {
 	}
 
 	parser := parser.NewParser(scanner.Tokens)
-	parser.Parse()
+	ast := parser.Parse()
+
+	interp := interpreter.NewInterpreter()
+	val := interp.Evaluate(ast)
+
+	fmt.Printf("val: %v\n", val)
+
 	return nil
 }
