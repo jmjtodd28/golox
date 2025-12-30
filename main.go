@@ -75,7 +75,7 @@ func run(script string) error {
 	ast := parser.Parse()
 
 	interp := interpreter.NewInterpreter()
-	val := interp.Evaluate(ast)
+	val := interp.EvaluateExpr(ast)
 
 	fmt.Printf("val: %v\n", val)
 
