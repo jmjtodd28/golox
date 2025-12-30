@@ -66,6 +66,18 @@ func (i *Interpreter) evalBinaryExpr(expr *ast.BinaryExpr) any {
 		return i.applyBinaryOperator(token.STAR, left, right)
 	case token.SLASH:
 		return i.applyBinaryOperator(token.SLASH, left, right)
+	case token.BANG_EQUAL:
+		return i.applyBinaryOperator(token.BANG_EQUAL, left, right)
+	case token.EQUAL_EQUAL:
+		return i.applyBinaryOperator(token.EQUAL_EQUAL, left, right)
+	case token.GREATER:
+		return i.applyBinaryOperator(token.GREATER, left, right)
+	case token.GREATER_EQUAL:
+		return i.applyBinaryOperator(token.GREATER_EQUAL, left, right)
+	case token.LESS:
+		return i.applyBinaryOperator(token.LESS, left, right)
+	case token.LESS_EQUAL:
+		return i.applyBinaryOperator(token.LESS_EQUAL, left, right)
 
 	}
 	return nil
@@ -108,8 +120,39 @@ func (i *Interpreter) applyBinaryOperator(operator token.Type, left any, right a
 			}
 		}
 		panic("Cannot divide two non-numbers")
-
+	case token.BANG_EQUAL:
+		return left != right
+	case token.EQUAL_EQUAL:
+		return left == right
+	case token.GREATER:
+		if leftNum, ok := left.(float64); ok {
+			if rightNum, ok := right.(float64); ok {
+				return leftNum > rightNum
+			}
+		}
+		panic("Cannot > two non-numbers")
+	case token.GREATER_EQUAL:
+		if leftNum, ok := left.(float64); ok {
+			if rightNum, ok := right.(float64); ok {
+				return leftNum >= rightNum
+			}
+		}
+		panic("Cannot >= two non-numbers")
+	case token.LESS:
+		if leftNum, ok := left.(float64); ok {
+			if rightNum, ok := right.(float64); ok {
+				return leftNum < rightNum
+			}
+		}
+		panic("Cannot < two non-numbers")
+	case token.LESS_EQUAL:
+		if leftNum, ok := left.(float64); ok {
+			if rightNum, ok := right.(float64); ok {
+				return leftNum <= rightNum
+			}
+		}
+		panic("Cannot <= two non-numbers")
+	default:
+		panic("unknown binary operator")
 	}
-
-	return nil
 }
