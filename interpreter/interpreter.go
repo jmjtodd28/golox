@@ -24,6 +24,8 @@ func (i *Interpreter) EvaluateExpr(expr ast.Expr) any {
 		return i.evalBinaryExpr(expr)
 	case *ast.Grouping:
 		return i.evalGroupingExpr(expr)
+	case *ast.Unary:
+		return i.evalUnaryExpr(expr)
 	}
 
 	return nil
@@ -85,6 +87,22 @@ func (i *Interpreter) evalBinaryExpr(expr *ast.BinaryExpr) any {
 
 func (i *Interpreter) evalGroupingExpr(expr *ast.Grouping) any {
 	return i.EvaluateExpr(expr.Expression)
+}
+
+func (i *Interpreter) evalUnaryExpr(expr *ast.Unary) any {
+	right := i.EvaluateExpr(expr.Expression)
+
+	switch expr.Operator.TokenType {
+	case token.MINUS:
+		if num, ok := right.(float64); ok {
+			return -num
+		}
+		panic("Cannot subtract a non-number")
+	case token.BANG:
+		return !i.isTruthy(right)
+	}
+
+	return nil
 }
 
 func (i *Interpreter) applyBinaryOperator(operator token.Type, left any, right any) any {
@@ -155,4 +173,16 @@ func (i *Interpreter) applyBinaryOperator(operator token.Type, left any, right a
 	default:
 		panic("unknown binary operator")
 	}
+}
+
+func (i *Interpreter) isTruthy(value any) bool {
+	if value == nil {
+		return false
+	}
+
+	if b, ok := value.(bool); ok {
+		return b
+	}
+
+	return true
 }
