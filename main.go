@@ -67,10 +67,6 @@ func run(script string) error {
 	scanner := scanner.NewScanner(script)
 	scanner.ScanTokens()
 
-	for _, token := range scanner.Tokens {
-		fmt.Println(token.String())
-	}
-
 	parser := parser.NewParser(scanner.Tokens)
 	ast := parser.Parse()
 

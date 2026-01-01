@@ -3,6 +3,7 @@ package interpreter
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/jmjtodd28/golox/ast"
 	"github.com/jmjtodd28/golox/token"
@@ -113,7 +114,12 @@ func (i *Interpreter) applyBinaryOperator(operator token.Type, left any, right a
 				return leftNum + rightNum
 			}
 		}
-		panic("Cannot add two non-numbers")
+		if leftString, ok := left.(string); ok {
+			if rightString, ok := right.(string); ok {
+				return leftString + rightString
+			}
+		}
+		panic("Cannot add two non-numbers/strings")
 	case token.MINUS:
 		if leftNum, ok := left.(float64); ok {
 			if rightNum, ok := right.(float64); ok {
