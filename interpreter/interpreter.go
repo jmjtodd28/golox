@@ -3,7 +3,6 @@ package interpreter
 import (
 	"fmt"
 	"strconv"
-	"strings"
 
 	"github.com/jmjtodd28/golox/ast"
 	"github.com/jmjtodd28/golox/token"
