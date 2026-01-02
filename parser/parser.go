@@ -20,10 +20,32 @@ func NewParser(tokens []token.Token) Parser {
 	}
 }
 
-func (p *Parser) Parse() ast.Expr {
-	ast := p.parseExpression()
-	fmt.Println(ast.Print())
-	return ast
+func (p *Parser) Parse() []ast.Stmt {
+	var statements []ast.Stmt
+	for !p.isAtEnd() {
+		stmt := p.parseStatement()
+		statements = append(statements, stmt)
+	}
+	return statements
+}
+
+func (p *Parser) parseStatement() ast.Stmt {
+	if p.match(token.PRINT) {
+		return p.ParsePrintStmt()
+	}
+	return p.ParseExpressionStmt()
+}
+
+func (p *Parser) ParsePrintStmt() ast.PrintStmt {
+	value := p.parseExpression()
+	p.consume(token.SEMICOLON, "Expected ';' after value")
+	return ast.NewPrintStmt(value)
+}
+
+func (p *Parser) ParseExpressionStmt() ast.ExpressionStmt {
+	value := p.parseExpression()
+	p.consume(token.SEMICOLON, "Expected ';' after value")
+	return ast.NewExpressionStmt(value)
 }
 
 func (p *Parser) parseExpression() ast.Expr {
@@ -106,6 +128,15 @@ func (p *Parser) parsePrimary() ast.Expr {
 	default:
 		panic(fmt.Sprintf("Unexpected token: %v", tok))
 	}
+}
+
+func (p *Parser) consume(tokenType token.Type, message string) {
+	if p.check(tokenType) {
+		p.advance()
+		return
+	}
+
+	panic(message)
 }
 
 func (p *Parser) match(tokenTypes ...token.Type) bool {

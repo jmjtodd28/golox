@@ -34,7 +34,7 @@ func runFile(script string) error {
 	if err != nil {
 		return fmt.Errorf("Opening file: %w:", err)
 	}
-	if err := run(string(fileContents)); err != nil {
+	if err := run(string(fileContents), false); err != nil {
 		return err
 	}
 	return nil
@@ -56,24 +56,22 @@ func runPrompt() error {
 			}
 			panic("Unexpected error reading from user")
 		}
-		if err := run(input); err != nil {
+		if err := run(input, true); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func run(script string) error {
+func run(script string, isREPLMode bool) error {
 	scanner := scanner.NewScanner(script)
 	scanner.ScanTokens()
 
 	parser := parser.NewParser(scanner.Tokens)
-	ast := parser.Parse()
+	statements := parser.Parse()
 
-	interp := interpreter.NewInterpreter()
-	val := interp.EvaluateExpr(ast)
-
-	fmt.Printf("val: %v\n", val)
+	interp := interpreter.NewInterpreter(isREPLMode)
+	interp.Evaluate(statements)
 
 	return nil
 }

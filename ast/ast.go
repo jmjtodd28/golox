@@ -66,3 +66,34 @@ func NewUnary(value token.Token, expression Expr) Expr {
 func (u *Unary) Print() string {
 	return "(" + u.Operator.Lexeme + " " + u.Expression.Print() + ")"
 }
+
+type Stmt interface {
+	isStmt()
+}
+
+type stmt struct {
+}
+
+func (stmt) isStmt() {}
+
+type ExpressionStmt struct {
+	Expression Expr
+	stmt
+}
+
+func NewExpressionStmt(expr Expr) ExpressionStmt {
+	return ExpressionStmt{
+		Expression: expr,
+	}
+}
+
+type PrintStmt struct {
+	Expression Expr
+	stmt
+}
+
+func NewPrintStmt(expr Expr) PrintStmt {
+	return PrintStmt{
+		Expression: expr,
+	}
+}

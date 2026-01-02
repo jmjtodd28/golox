@@ -9,10 +9,38 @@ import (
 )
 
 type Interpreter struct {
+	isREPLMode bool
 }
 
-func NewInterpreter() Interpreter {
-	return Interpreter{}
+func NewInterpreter(isREPLMode bool) Interpreter {
+	return Interpreter{
+		isREPLMode: isREPLMode,
+	}
+}
+
+func (i *Interpreter) Evaluate(statements []ast.Stmt) {
+	for _, stmt := range statements {
+		switch stmt := stmt.(type) {
+		case ast.PrintStmt:
+			i.evalPrintStmt(stmt)
+		case ast.ExpressionStmt:
+			i.evalExperssionStmt(stmt)
+		default:
+			panic("Unexpected statement type")
+		}
+	}
+}
+
+func (i *Interpreter) evalPrintStmt(stmt ast.PrintStmt) {
+	value := i.EvaluateExpr(stmt.Expression)
+	fmt.Println(value)
+}
+
+func (i *Interpreter) evalExperssionStmt(stmt ast.ExpressionStmt) {
+	value := i.EvaluateExpr(stmt.Expression)
+	if i.isREPLMode {
+		fmt.Println(value)
+	}
 }
 
 func (i *Interpreter) EvaluateExpr(expr ast.Expr) any {
